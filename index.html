@@ -8,15 +8,15 @@
         table {
             margin: 0 auto;
             display: block;
-            width: 750px;
+            width: 764px;
             page-break-after: always;
         }
 
         .exam-item {
             display: inline-block;
-            margin: 4px 8px;
-            font-size: 22px;
-            width: 168px;
+            margin: 4px 0px;
+            font-size: 20px;
+            width: 188px;
             text-align: center;
         }
 
@@ -39,7 +39,22 @@
         <span>生成份数：</span>
         &nbsp;&nbsp;
         <input value=2 type="text" style="width: 50px;height: 20px;text-align: center;">
+        <br />
+        <span>最大数字：</span>
         &nbsp;&nbsp;
+        <input value=20 type="text" style="width: 50px;height: 20px;text-align: center;">
+        <br />
+        <span>数字个数：</span>
+        &nbsp;&nbsp;
+        <input value=3 type="text" style="width: 50px;height: 20px;text-align: center;">
+        <br />
+        <span>打印答案：</span>
+        &nbsp;&nbsp;
+        <select>
+            <option value='true'>是</option>
+            <option value='false' selected>否</option>
+        </select>
+        <br />
         <button id="done">生成</button>
     </div>
 </body>

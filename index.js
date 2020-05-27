@@ -13,21 +13,60 @@ function run(test) {
     return eval(`(${test})`);
 }
 
-//type1 a+b=?
-function type1(max) {
-    let a = -1;
-    let b = -1;
-    let op = '+';
+const expStr = function (adderArr, opArr) {
+    let rt = [adderArr[0]];
+    for (let i = 1; i < opArr.length; i++) {
+        rt.push(` ${opArr[i]} ${adderArr[i]}`);
+    }
+    return rt.join('');
+}
+
+// a+b+c+d=?
+function baseType1(max, adderNum) {
+
+    const adder_num = adderNum;
+    let adderArr = [];// a,b,c
+    let opArr = ['+'];// +,+
     let answer = undefined;
     do {
-        a = getInt(0, max);
-        b = getInt(0, max);
-        op = getOp();
-        answer = run(`${a} ${op} ${b}`);
+        for (let i = 0; i < adder_num; i++) {
+            adderArr[i] = a = getInt(0, max);
+        }
+        for (let i = 1; i < adder_num; i++) {
+            opArr[i] = getOp();
+        }
+        answer = run(expStr(adderArr, opArr));// a + b + c
     } while (!(0 <= answer && answer <= max))
 
-    return [`${a} ${op} ${b} = ${emptyStr}`, answer];
+    return [`${expStr(adderArr, opArr)} = ${emptyStr}`, answer];
 }
+
+// a+?+c+d=e
+function baseType2(max, adderNum) {
+    let num = [];
+    let lastNum = -1;
+    let emptyIndex = getInt(0, adderNum);//0,1,2
+    let op = ['+'];
+    let answer = undefined;
+    do {
+        num[0] = getInt(0, max);
+        for (let i = 0; i < adderNum; i++) {
+            num[i] = (i == emptyIndex) ? '0' : getInt(0, max);// 暂时让填空的数字为0，则左边加减乘除均无影响
+        }
+        for (let i = 1; i < adderNum; i++) {
+            op[i] = getOp();
+        }
+        lastNum = getInt(0, max);
+
+
+
+        answer = run(`${op[emptyIndex]}(${lastNum} - (${expStr(num, op)}))`);
+    } while (!(0 <= answer && answer <= max))
+
+    num[emptyIndex] = emptyStr;
+    return [`${expStr(num, op)} = ${lastNum}`, answer];
+}
+
 
 function test(output) {
     let exam = output[0];
@@ -36,29 +75,11 @@ function test(output) {
     return eval(`(${scriptStr})`);
 }
 
-//type1 a+()=b?
-function type2(max) {
-    let num = [-1];
-    let lastNum = -1;
-    let emptyIndex = getInt(0, 2);//0,1
-    let op = ['+'];
-    let answer = undefined;
-    do {
-        num[0] = getInt(0, max);
-        lastNum = getInt(0, max);
-        op[0] = getOp();
 
 
 
-        answer = run(`${emptyIndex == 1 ? op : ''}(${lastNum}-(${emptyIndex == 0 ? op : ''}${num[0]}))`);
-    } while (!(0 <= answer && answer <= max))
 
-
-    return [`${emptyIndex == 0 ? emptyStr : num[0]} ${op} ${emptyIndex == 1 ? emptyStr : num[0]} = ${lastNum}`, answer];
-}
-
-
-function page(withAnswer) {
+function page(withAnswer, max, adderNum) {
 
 
     let total = 100;
@@ -66,7 +87,7 @@ function page(withAnswer) {
     let items = [];
     let uniqueItemMap = {};
     do {
-        const problem = run(`type${getInt(1, 3)}(20)`)
+        const problem = run(`baseType${getInt(1, 3)}(${max},${adderNum})`)
         if (!uniqueItemMap[problem[0]]) {
             uniqueItemMap[problem[0]] = true;
             items.push(problem);
@@ -115,10 +136,13 @@ function page(withAnswer) {
 
 $(function () {
     $('button').on('click', function () {
-        let copy = $('input').val();
+        let copy = $($('input')[0]).val();
+        let max = $($('input')[1]).val();
+        let adderNum = $($('input')[2]).val();
+        let printAnswer = $('select').val();
         $('#config').hide();
         for (var i = 0; i < copy; i++) {
-            let p = page(false);
+            let p = page(printAnswer == 'true', max, adderNum);
             $(document.body).append(p[0].join(''));
             $(document.body).append(p[1].join(''));
         }
